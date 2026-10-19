@@ -5,12 +5,37 @@ services:
     environment:
       ACCEPT_EULA: "Y"
       MSSQL_SA_PASSWORD: "sa@12345678"
-      MSSQL_PORT: 1434
+      MSSQL_PID: "Developer"
     ports:
-      - "1434:1434"
+      - "1436:1433"
     volumes:
       - mssql_data:/var/opt/mssql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q \"SELECT 1\" || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: security_asymmetric_encryption_app
+    depends_on:
+      mssql:
+        condition: service_healthy
+    environment:
+      DB_URL: mssql
+      DB_PORT: 1433
+      DB_NAME: master
+      DB_USERNAME: sa
+      DB_PASSWORD: sa@12345678
+      SERVER_PORT: 8081
+    ports:
+      - "8081:8081"
+    restart: on-failure
 
 volumes:
   mssql_data:

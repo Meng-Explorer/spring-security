@@ -83,6 +83,8 @@ This project uses the container defined in `docker-compose.yaml` and exposes SQL
 
 ## Running the Application
 
+### Option 1: Local development with Gradle
+
 Use the Gradle wrapper to start the API:
 
 ```bash
@@ -93,6 +95,25 @@ On Windows PowerShell:
 
 ```powershell
 ./gradlew.bat bootRun
+```
+
+### Option 2: Docker deployment
+
+Build and start both the database and API with Docker Compose:
+
+```bash
+docker compose up --build -d
+```
+
+This starts:
+
+- SQL Server on `localhost:1434`
+- Spring Boot API on `http://localhost:8081`
+
+To stop everything:
+
+```bash
+docker compose down
 ```
 
 The application starts on:
